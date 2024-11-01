@@ -25,6 +25,7 @@ for k in range(epochs):
         y_pred = model(x)  # Forward pass
         loss = (y_pred - Value(y)) ** 2  # Mean squared error loss
         total_loss += loss
+    
     # Backward pass: reset gradients, calculate new gradients
     model.zero_grad()  # Clear previous gradients
     total_loss.backward()  # Backpropagation
