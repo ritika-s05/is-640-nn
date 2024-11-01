@@ -67,6 +67,7 @@ class Value:
         self.grad = 1
         for v in reversed(topo):
             v._backward()
+
     def _neg_(self): # -self
         return self * -1
 
