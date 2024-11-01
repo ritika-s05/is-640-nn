@@ -41,6 +41,7 @@ class Layer(Module):
 
     def _repr_(self):
         return f"Layer of [{', '.join(str(n) for n in self.neurons)}]"
+
 class MLP(Module):
 
     def _init_(self, nin, nouts):
