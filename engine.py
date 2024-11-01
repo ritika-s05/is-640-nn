@@ -67,3 +67,26 @@ class Value:
         self.grad = 1
         for v in reversed(topo):
             v._backward()
+    def _neg_(self): # -self
+        return self * -1
+
+    def _radd_(self, other): # other + self
+        return self + other
+
+    def _sub_(self, other): # self - other
+        return self + (-other)
+
+    def _rsub_(self, other): # other - self
+        return other + (-self)
+
+    def _rmul_(self, other): # other * self
+        return self * other
+
+    def _truediv_(self, other): # self / other
+        return self * other**-1
+
+    def _rtruediv_(self, other): # other / self
+        return other * self**-1
+
+    def _repr_(self):
+        return f"Value(data={self.data}, grad={self.grad})"
