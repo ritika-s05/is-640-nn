@@ -1,34 +1,43 @@
 import random
 from engine import Value
-from nn import MLP
 
-# Create a simple dataset (e.g., XOR problem)
-data = [
-    ([2.0, 3.0], 1.0),
-    ([3.0, -1.0], -1.0),
-    ([1.0, 1.0], 1.0),
-    ([2.0, -2.0], -1.0)
-]
+class Module:
 
-# Initialize a simple MLP model: 2 inputs, one hidden layer with 4 neurons, 1 output
-model = MLP(2, [4, 1])
+    def zero_grad(self):
+        for p in self.parameters():
+            p.grad = 0
 
-# Training loop
-epochs = 100  # Number of iterations
-learning_rate = 0.01
+    def parameters(self):
+        return []
 
-for k in range(epochs):
-    # Forward pass: predict the output for each data point
-    total_loss = Value(0)
-    for x, y in data:
-        x = [Value(xi) for xi in x]  # Convert inputs to Value objects
-        y_pred = model(x)  # Forward pass
-        loss = (y_pred - Value(y)) ** 2  # Mean squared error loss
-        total_loss += loss
-    
-    # Update model parameters using gradient descent
-    for p in model.parameters():
-        p.data -= learning_rate * p.grad
-    
-    # Print the progress: epoch and current loss
-    print(k, total_loss.data)
+class Neuron(Module):
+
+    def _init_(self, nin, nonlin=True):
+        self.w = [Value(random.uniform(-1,1)) for _ in range(nin)]
+        self.b = Value(0)
+        self.nonlin = nonlin
+
+    def _call_(self, x):
+        act = sum((wi*xi for wi,xi in zip(self.w, x)), self.b)
+        return act.relu() if self.nonlin else act
+
+    def parameters(self):
+        return self.w + [self.b]
+
+    def _repr_(self):
+        return f"{'ReLU' if self.nonlin else 'Linear'}Neuron({len(self.w)})"
+
+class Layer(Module):
+
+    def _init_(self, nin, nout, **kwargs):
+        self.neurons = [Neuron(nin, **kwargs) for _ in range(nout)]
+
+    def _call_(self, x):
+        out = [n(x) for n in self.neurons]
+        return out[0] if len(out) == 1 else out
+
+    def parameters(self):
+        return [p for n in self.neurons for p in n.parameters()]
+
+    def _repr_(self):
+        return f"Layer of [{', '.join(str(n) for n in self.neurons)}]"
