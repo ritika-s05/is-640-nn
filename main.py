@@ -1,4 +1,34 @@
-import random
+from engine import Value
+from nn import MLP
+
+# Input data and expected outputs
+xs = [[2.0, 3.0, -1.0], 
+      [3.0, -1.0, 0.5], 
+      [0.5, 1.0, 1.0], 
+      [1.0, 1.0, -1.0]]  
+
+ys = [1.0, -1.0, -1.0, 1.0]  # Labels
+
+# Initialize the neural network with 3 input, 2 hidden (4 neurons each), and 1 output layer
+n = MLP(3, [4, 4, 1])
+
+# Training loop
+for k in range(20):
+    # Forward pass: generate predictions
+    ypred = [n(x) for x in xs]
+    # Calculate loss as mean squared error
+    loss = sum((yout - ygt) ** 2 for ygt, yout in zip(ys, ypred))
+
+    # Zero gradients, backpropagate, and update parameters
+    for p in n.parameters():
+        p.grad = 0.0
+    loss.backward()
+
+    # Gradient descent step
+    for p in n.parameters():
+        p.data += -0.1 * p.grad 
+
+    print(k, loss.data)  # Output epoch and lossimport random
 from engine import Value
 from nn import MLP
 
