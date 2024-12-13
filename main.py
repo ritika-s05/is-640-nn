@@ -44,7 +44,7 @@ data = [
 model = MLP(2, [4, 1])
 
 # Training loop
-epochs = 100  # Number of iterations
+epochs = 20  # Number of iterations
 learning_rate = 0.01
 
 for k in range(epochs):
